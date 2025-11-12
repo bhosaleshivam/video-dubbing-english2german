@@ -15,8 +15,8 @@ EN->DE video dubbing pipeline with TTS and voice cloning using CoquiTTS.
 **Input (English):**
 
 <video width="100%" controls>
-  <source src="data/input/Tanzania-2.mp4" type="video/mp4">
-  Your browser does not support the video tag. <a href="data/input/Tanzania-2.mp4">Download video</a>
+  <source src="./data/input/Tanzania-2.mp4" type="video/mp4">
+  Your browser does not support the video tag. <a href="./data/input/Tanzania-2.mp4">Download video</a>
 </video>
 
 </td>
@@ -25,8 +25,8 @@ EN->DE video dubbing pipeline with TTS and voice cloning using CoquiTTS.
 **Output (German Dubbed):**
 
 <video width="100%" controls>
-  <source src="data/output/Tanzania-2.de.mp4" type="video/mp4">
-  Your browser does not support the video tag. <a href="data/output/Tanzania-2.de.mp4">Download video</a>
+  <source src="./data/output/Tanzania-2.de.mp4" type="video/mp4">
+  Your browser does not support the video tag. <a href="./data/output/Tanzania-2.de.mp4">Download video</a>
 </video>
 
 </td>
