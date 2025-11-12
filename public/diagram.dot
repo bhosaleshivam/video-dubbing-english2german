@@ -1,0 +1,75 @@
+digraph EN2DE_Dubbing_Pipeline {
+	fontsize=10 label="EN→DE Video Dubbing Pipeline (Updated)" labelloc=t rankdir=LR
+	node [color="#444444" fillcolor="#f7f7f9" fontname=Inter shape=box style="rounded,filled"]
+	edge [color="#555555" fontname=Inter]
+	subgraph cluster_input {
+		color="#A0A0A0" label=Input
+		inp [label="Video (MP4)
++ Transcript (.srt or .txt)" shape=box]
+	}
+	subgraph cluster_audio {
+		color="#A0A0A0" label="Audio Prep"
+		extract_audio [label="Extract audio
+(ffmpeg) → src_full.wav"]
+		extract_vocals [label="Extract vocals & clone_ref
+(Demucs) → src_vocals.wav + clone_ref.wav"]
+		extract_bg [label="Extract background (instrumental)
+(Demucs) → src_instrumental.wav"]
+		extract_audio -> extract_vocals
+		extract_audio -> extract_bg
+	}
+	subgraph cluster_text {
+		color="#A0A0A0" label="Text Prep"
+		has_srt [label="Provided SRT?" fillcolor="#fff3cd" shape=diamond]
+		use_srt [label="Use EN SRT
+(provided)"]
+		force_align [label="Force Align TXT → EN SRT
+(aeneas | naive)"]
+		has_srt -> use_srt [label=Yes]
+		has_srt -> force_align [label=No]
+	}
+	subgraph cluster_mt {
+		color="#A0A0A0" label=Translation
+		translate [label="Machine Translation EN→DE
+(Argos Translate) → DE.srt"]
+	}
+	subgraph cluster_tts {
+		color="#A0A0A0" label="Voice Synthesis"
+		tts [label="German TTS w/ speaker cloning
+(Coqui XTTS v2; fallback Thorsten)
+→ 00001.wav … + tts_report.json"]
+		fit_concat [label="Time‑fit per cue + concatenate
+(ffmpeg atempo chain, padding)
+→ de_voice.wav"]
+	}
+	subgraph cluster_mix {
+		color="#A0A0A0" label="Mix & Master"
+		mix [label="Sidechain ducking + loudnorm (−16 LUFS)
+Heuristic: voice‑only if no music
+→ de_mix.wav"]
+	}
+	subgraph cluster_final {
+		color="#A0A0A0" label="Finalize & Outputs"
+		finalize [label="Mux: copy video + new AAC audio
+(ffmpeg -c:v copy; +faststart)
++ Copy DE.srt/WAV"]
+		outputs [label="Outputs:
+• video.de.mp4
+• video.de.wav
+• video.de.srt" fillcolor="#e8f5e9"]
+	}
+	inp -> extract_audio
+	inp -> has_srt
+	use_srt -> translate
+	force_align -> translate
+	translate -> tts
+	extract_vocals -> tts [label="clone_ref.wav" style=dashed]
+	tts -> fit_concat
+	extract_bg -> mix [label="src_instrumental.wav" style=dashed]
+	fit_concat -> mix
+	mix -> finalize
+	finalize -> outputs
+	fontsize=10 label="EN→DE Video Dubbing Pipeline (Updated)" labelloc=t rankdir=LR
+	node [color="#444444" fillcolor="#f7f7f9" fontname=Inter shape=box style="rounded,filled"]
+	edge [color="#555555" fontname=Inter]
+}

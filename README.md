@@ -6,6 +6,11 @@ EN->DE video dubbing pipeline with TTS and voice cloning using CoquiTTS.
 
 **Platform Compatibility:** This code has been developed and tested on Windows. It has not been tested on Mac or Linux systems.
 
+![Flow diagram](public/diagram.svg)
+
+[DOT source](public/diagram.dot) • [PNG fallback](public/diagram.png)
+
+
 ## Sample Videos
 
 - **Input (English):** [Tanzania-2.mp4](data/input/Tanzania-2.mp4)
