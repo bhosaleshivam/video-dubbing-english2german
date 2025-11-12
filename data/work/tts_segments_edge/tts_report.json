@@ -1,0 +1,68 @@
+{
+  "model": "tts_models/multilingual/multi-dataset/xtts_v2",
+  "fallback_model": "tts_models/de/thorsten/vits",
+  "cloned": true,
+  "reason": "",
+  "segments": [
+    {
+      "i": 1,
+      "text": "Tansania – Zuhause für einige der atemberaubendsten Tierwelt auf der Erde.",
+      "ok": true,
+      "source": "clone"
+    },
+    {
+      "i": 2,
+      "text": "Hier, im Herzen von Ostafrika, der große Serengeti Nationalpark beherbergt eines der größten Spektakel der Natur: die Große Migration.",
+      "ok": true,
+      "source": "clone"
+    },
+    {
+      "i": 3,
+      "text": "Über eine Million Wildebeest, Zebras und Gazellen reisen weite Strecken auf der Suche nach frischem Gras, braving Flüsse gefüllt mit Krokodilen.",
+      "ok": true,
+      "source": "clone"
+    },
+    {
+      "i": 4,
+      "text": "Aber Raubtiere sind nie weit dahinter.",
+      "ok": true,
+      "source": "clone"
+    },
+    {
+      "i": 5,
+      "text": "Löwen, die Könige der Savanna, stalken ihre Beute mit Geduld und Präzision.",
+      "ok": true,
+      "source": "clone"
+    },
+    {
+      "i": 6,
+      "text": "Cheetahs, die schnellsten Landtiere, verfolgen ihre Ziele in einem spannende Anzeige der Geschwindigkeit.",
+      "ok": true,
+      "source": "clone"
+    },
+    {
+      "i": 7,
+      "text": "Im üppigen Nationalpark Tarangire streifen riesige Elefanten frei.",
+      "ok": true,
+      "source": "clone"
+    },
+    {
+      "i": 8,
+      "text": "Diese intelligenten Kreaturen bilden starke Familienbindungen, Schutz ihre jungen aus Drohungen.",
+      "ok": true,
+      "source": "clone"
+    },
+    {
+      "i": 9,
+      "text": "Und im alten Ngorongoro Crater, dem gefährdeten schwarzen Rhino findet Zuflucht, ein seltener Anblick in der Wildnis.",
+      "ok": true,
+      "source": "clone"
+    },
+    {
+      "i": 10,
+      "text": "Tansanias Tierwelt ist ein Schatz wie kein anderer – ein zartes Gleichgewicht von Natur, die uns an die Schönheit und Macht der Wildnis erinnert.",
+      "ok": true,
+      "source": "clone"
+    }
+  ]
+}

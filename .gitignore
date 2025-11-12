@@ -24,12 +24,7 @@ wheels/
 *.egg
 
 # Data files
-data/input/*
-data/output/*
-data/work/*
-!data/input/.gitkeep
-!data/output/.gitkeep
-!data/work/.gitkeep
+# data folder contents are now tracked
 
 # Models (large files, checkpoints, downloaded models)
 models/
@@ -42,9 +37,6 @@ models/
 *.pb
 
 # Audio/Video files (typically large and generated)
-*.wav
-*.mp3
-*.mp4
 *.avi
 *.mkv
 *.flac
@@ -53,7 +45,6 @@ models/
 *.aac
 
 # Subtitle files (generated)
-*.srt
 *.vtt
 *.ass
 
