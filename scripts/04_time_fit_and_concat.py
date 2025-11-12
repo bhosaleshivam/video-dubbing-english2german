@@ -66,11 +66,11 @@ def make_silence(out: pathlib.Path, dur: float, sr: int, ch: int):
     ], quiet=True)
 
 def trim_lead_trail_silence(inp: pathlib.Path, out: pathlib.Path, sr: int, ch: int):
-    # Common & robust pattern: remove leading silence, reverse, remove again, reverse back.
-    # Threshold mildly conservative to keep breaths: -35dB
-    af = "silenceremove=start_periods=1:start_duration=0:start_threshold=-35dB," \
+    # Much gentler silence removal - only trim truly silent parts (< -50dB)
+    # Shorter detection window to preserve natural speech pauses
+    af = "silenceremove=start_periods=1:start_duration=0.05:start_threshold=-50dB," \
          "areverse," \
-         "silenceremove=start_periods=1:start_duration=0:start_threshold=-35dB," \
+         "silenceremove=start_periods=1:start_duration=0.05:start_threshold=-50dB," \
          "areverse"
     sh([
         "ffmpeg","-v","error","-i", str(inp),
@@ -96,10 +96,13 @@ def stretch_to_duration(inp: pathlib.Path, out: pathlib.Path, target_sec: float,
     # Guard for tiny/zero durations
     target_sec = max(0.001, target_sec)
     src_dur = max(0.001, ffprobe_duration(inp))
-    tempo = target_sec / src_dur
-    chain = atempo_chain(tempo)
-    # Pad a hair, then hard trim to exact duration for sample-accurate length
-    af = f"{chain},apad=whole_dur={target_sec:.6f},atrim=end={target_sec:.6f}"
+    # Correct tempo calculation: speed = src/target (to fit src into target time)
+    speed = src_dur / target_sec
+    chain = atempo_chain(speed)
+    # Use setpts for precise duration control without clicks
+    # Calculate the exact number of samples needed
+    samples = int(target_sec * sr)
+    af = f"{chain},asetpts=PTS-STARTPTS,apad=whole_len={samples}"
     sh([
         "ffmpeg","-v","error","-i", str(inp),
         "-af", af, "-ar", str(sr), "-ac", str(ch),
@@ -144,6 +147,7 @@ def main():
     ap.add_argument("--sr", type=int, default=48000)
     ap.add_argument("--ch", type=int, default=1)
     ap.add_argument("--total-duration", type=float, default=None, help="Optional final target length (sec) to pad tail")
+    ap.add_argument("--padding", type=float, default=0.1, help="Padding in seconds at start/end of each cue (default: 0.1)")
     args = ap.parse_args()
 
     srt_blocks = read_srt(args.srt)
@@ -163,10 +167,11 @@ def main():
         make_silence(lead, first_start, sr, ch)
         segments.append(lead)
 
-    # 2) For each cue: fit TTS (or silence) to (end-start), and add gap after it
+    # 2) For each cue: add padding, fit TTS to reduced window, add padding
     prev_end = 0.0
+    padding = args.padding
+    
     for idx, start, end, text in srt_blocks:
-        dur = max(0.0, end - start)
         # Gap from previous end to this start (if any)
         gap = max(0.0, start - prev_end)
         if gap > 0.0005:
@@ -174,10 +179,20 @@ def main():
             make_silence(gap_wav, gap, sr, ch)
             segments.append(gap_wav)
 
+        # Add leading padding for this cue
+        if padding > 0.0005:
+            pad_start = work / f"{idx:05d}_pad_start.wav"
+            make_silence(pad_start, padding, sr, ch)
+            segments.append(pad_start)
+
+        # Calculate audio duration (window minus both paddings)
+        window_dur = max(0.0, end - start)
+        audio_dur = max(0.001, window_dur - 2 * padding)
+        
         tts_in = find_tts_file(idx, args.tts_dir)
         target = work / f"{idx:05d}_fitted.wav"
 
-        if tts_in and dur > 0:
+        if tts_in and audio_dur > 0:
             # Trim head/tail silence, then time-fit
             trimmed = work / f"{idx:05d}_trim.wav"
             try:
@@ -189,15 +204,22 @@ def main():
                 trimmed = tts_in  # be resilient
 
             try:
-                stretch_to_duration(trimmed, target, dur, sr, ch)
+                stretch_to_duration(trimmed, target, audio_dur, sr, ch)
             except Exception:
                 # Last resort: generate silence for this cue
-                make_silence(target, dur, sr, ch)
+                make_silence(target, audio_dur, sr, ch)
         else:
             # Missing/empty cue → silence keeps alignment intact
-            make_silence(target, dur, sr, ch)
+            make_silence(target, audio_dur, sr, ch)
 
         segments.append(target)
+        
+        # Add trailing padding for this cue
+        if padding > 0.0005:
+            pad_end = work / f"{idx:05d}_pad_end.wav"
+            make_silence(pad_end, padding, sr, ch)
+            segments.append(pad_end)
+        
         prev_end = end
 
     # 3) Optional tail padding to reach total-duration

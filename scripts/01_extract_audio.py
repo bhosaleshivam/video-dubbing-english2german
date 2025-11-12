@@ -102,31 +102,15 @@ def extract_audio(video, out_wav, sr=48000, ch=1):
         raise RuntimeError(f"Output file was not created: {out_wav}")
     print(f"✓ Audio extracted successfully: {out_wav}")
 
-def extract_clone_ref(full_wav, out_ref, ref_sec=6.0):
-    """Extract a reference segment from the full audio for voice cloning."""
-    if not os.path.exists(full_wav):
-        raise FileNotFoundError(f"Input audio file not found: {full_wav}")
-    print(f"Extracting clone reference from {full_wav}...")
-    dur = ffprobe_duration(full_wav)
-    start = max(0.0, (dur - ref_sec)/2.0)
-    print(f"  Audio duration: {dur:.2f}s, extracting {ref_sec}s starting at {start:.2f}s")
-    run(["ffmpeg","-y","-i",full_wav,"-ss",f"{start:.3f}","-t",str(ref_sec),
-         "-c","copy",out_ref])
-    if not os.path.exists(out_ref):
-        raise RuntimeError(f"Output file was not created: {out_ref}")
-    print(f"✓ Clone reference created: {out_ref}")
-
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--video", required=True)
     ap.add_argument("--out_wav", required=True)            # e.g. data/work/src_full.wav
-    ap.add_argument("--clone_ref", required=True)          # e.g. data/work/clone_ref.wav
     args = ap.parse_args()
     
     try:
         extract_audio(args.video, args.out_wav)
-        extract_clone_ref(args.out_wav, args.clone_ref)
-        print("\n✓ SUCCESS: Audio extracted and clone_ref created")
+        print("\n✓ SUCCESS: Audio extracted")
     except Exception as e:
         print(f"\n✗ FAILED: {e}", file=sys.stderr)
         sys.exit(1)
