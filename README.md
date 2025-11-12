@@ -8,30 +8,8 @@ EN->DE video dubbing pipeline with TTS and voice cloning using CoquiTTS.
 
 ## Sample Videos
 
-<table>
-<tr>
-<td width="50%">
-
-**Input (English):**
-
-<video width="100%" controls>
-  <source src="./data/input/Tanzania-2.mp4" type="video/mp4">
-  Your browser does not support the video tag. <a href="./data/input/Tanzania-2.mp4">Download video</a>
-</video>
-
-</td>
-<td width="50%">
-
-**Output (German Dubbed):**
-
-<video width="100%" controls>
-  <source src="./data/output/Tanzania-2.de.mp4" type="video/mp4">
-  Your browser does not support the video tag. <a href="./data/output/Tanzania-2.de.mp4">Download video</a>
-</video>
-
-</td>
-</tr>
-</table>
+- **Input (English):** [Tanzania-2.mp4](data/input/Tanzania-2.mp4)
+- **Output (German Dubbed):** [Tanzania-2.de.mp4](data/output/Tanzania-2.de.mp4)
 
 ## Assumptions
 
