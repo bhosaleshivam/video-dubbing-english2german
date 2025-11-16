@@ -19,24 +19,6 @@ def run(cmd):
         print(f"Please make sure {cmd[0]} is installed and in your PATH", file=sys.stderr)
         raise
 
-def ffprobe_duration(path):
-    """Get the duration of an audio/video file using ffprobe."""
-    try:
-        out = subprocess.check_output([
-            "ffprobe","-v","error","-show_entries","format=duration",
-            "-of","json",path
-        ], stderr=subprocess.PIPE)
-        data = json.loads(out)
-        return float(data["format"]["duration"])
-    except subprocess.CalledProcessError as e:
-        print(f"ERROR: ffprobe failed for {path}", file=sys.stderr)
-        if e.stderr:
-            print(f"STDERR: {e.stderr.decode()}", file=sys.stderr)
-        raise
-    except (KeyError, ValueError) as e:
-        print(f"ERROR: Could not parse duration from ffprobe output for {path}", file=sys.stderr)
-        raise
-
 def check_video_file(video):
     """Check if video file exists and is valid."""
     if not os.path.exists(video):
